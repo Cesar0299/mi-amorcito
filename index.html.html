@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Gabriela</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        #message-container {
+            position: absolute;
+            top: 5%;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        #message {
+            color: #fff;
+            font-size: 5em;
+            text-align: center;
+            text-shadow: 0 0 15px #ff69b4, 0 0 30px #ff1493;
+            opacity: 0;
+            transition: opacity 2s;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite alternate;
+        }
+        
+        #big-heart {
+            font-size: 1px;
+            color: #ff1493;
+            opacity: 0;
+            text-shadow: 0 0 20px #ff69b4;
+            animation: heartbeat 1.5s infinite alternate;
+            transition: all 2s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        #bouquet {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        
+        .rose {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transform: translateY(200px);
+            transition: opacity 1.5s, transform 1.5s;
+            filter: drop-shadow(0 0 15px rgba(255, 105, 180, 0.8));
+            z-index: 10;
+        }
+        
+        .rose .petals {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
+        .rose .stem {
+            position: absolute;
+            bottom: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 120px;
+            background: linear-gradient(to right, #228B22, #2E8B57);
+            border-radius: 8px;
+        }
+        
+        .rose .leaf {
+            position: absolute;
+            width: 45px;
+            height: 30px;
+            background-color: #2E8B57;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            bottom: -60px;
+            left: 50%;
+            margin-left: 15px;
+        }
+        
+        .rose .leaf:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #2E8B57;
+            border-radius: 50% 50% 0 50%;
+            transform: rotate(90deg);
+            left: -20px;
+            top: 8px;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 20px 10px;
+            opacity: 0;
+            z-index: 5;
+        }
+        
+        #hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .heart {
+            position: absolute;
+            font-size: 40px;
+            color: #ff1493;
+            animation: float 6s ease-in infinite;
+            opacity: 0;
+            text-shadow: 0 0 15px #fff;
+            z-index: 1;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-300px) rotate(20deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(30);
+                opacity: 0;
+            }
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        #ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20vh;
+            background: linear-gradient(to top, #013220, #228B22);
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div id="message-container">
+        <div id="message">Te quiero mucho, Gabriela ❤️</div>
+        <div id="big-heart">❤️</div>
+    </div>
+    <div id="bouquet"></div>
+    <div id="hearts"></div>
+    <div id="ground"></div>
+
+    <script>
+        // Colores para las rosas y cohetes
+        const colors = ['#ff0000', '#ff69b4', '#ff1493', '#ff00ff', '#ff6347', '#ff4500', '#ff8c00'];
+        
+        // Crear estrellas de fondo
+        function createStars() {
+            const stars = document.getElementById('stars');
+            const starCount = 150;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                const size = Math.random() * 4;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                
+                stars.appendChild(star);
+            }
+        }
+        
+        // Crear rosas
+        function createRoses() {
+            const bouquet = document.getElementById('bouquet');
+            const roseCount = 12; // Menos rosas pero mucho más grandes
+            
+            for (let i = 0; i < roseCount; i++) {
+                const rose = document.createElement('div');
+                rose.className = 'rose';
+                
+                // Posición aleatoria en la parte inferior
+                const left = 20 + Math.random() * 60;
+                const bottom = Math.random() * 10;
+                
+                // Color aleatorio
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Crear la rosa con SVG
+                rose.innerHTML = `
+                    <svg viewBox="0 0 300 300" width="180" height="180">
+                        <!-- Pétalos exteriores -->
+                        <path d="M150,80 Q165,50 180,80 Q210,60 195,120 Q225,140 180,160 Q195,210 150,190 Q105,210 120,160 Q75,140 105,120 Q90,60 120,80 Q135,50 150,80 Z" 
+                              fill="${color}" opacity="0.9"/>
+                        <!-- Pétalos interiores -->
+                        <path d="M150,100 Q160,80 170,100 Q185,90 175,130 Q190,140 170,150 Q175,180 150,170 Q125,180 130,150 Q110,140 125,130 Q115,90 130,100 Q140,80 150,100 Z" 
+                              fill="${color}" opacity="0.7"/>
+                        <!-- Centro -->
+                        <circle cx="150" cy="130" r="20" fill="#FFD700"/>
+                        <!-- Tallo -->
+                        <path d="M150,300 Q160,220 150,180" stroke="#2E8B57" stroke-width="12" fill="none"/>
+                        <!-- Hojas -->
+                        <path d="M170,240 Q200,220 180,260" stroke="none" fill="#2E8B57"/>
+                        <path d="M130,260 Q110,220 140,240" stroke="none" fill="#2E8B57"/>
+                    </svg>
+                `;
+                
+                rose.style.left = `${left}%`;
+                rose.style.bottom = `${bottom}%`;
+                rose.style.transform = `rotate(${Math.random() * 30 - 15}deg)`;
+                
+                bouquet.appendChild(rose);
+                
+                // Animación de aparición con retraso aleatorio
+                setTimeout(() => {
+                    rose.style.opacity = '1';
+                    rose.style.transform = 'translateY(0)';
+                }, i * 400 + Math.random() * 500);
+            }
+            
+            // Mostrar mensaje después de que aparezcan las rosas
+            setTimeout(() => {
+                document.getElementById('message').style.opacity = '1';
+                
+                // Mostrar corazón grande después del mensaje
+                setTimeout(() => {
+                    const bigHeart = document.getElementById('big-heart');
+                    bigHeart.style.opacity = '1';
+                    bigHeart.style.fontSize = '150px';
+                }, 1000);
+                
+                createHearts();
+                
+                // Iniciar cohetes después de un tiempo
+                setTimeout(launchFireworks, 2000);
+            }, roseCount * 400 + 2000);
+        }
+        
+        // Crear corazones flotantes
+        function createHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = `${10 + Math.random() * 80}%`;
+                heart.style.bottom = '20%';
+                heart.style.animationDelay = `${Math.random() * 2}s`;
+                heart.style.fontSize = `${40 + Math.random() * 50}px`;
+                
+                document.getElementById('hearts').appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 6000);
+            }, 200);
+        }
+        
+        // Lanzar cohetes
+        function launchFireworks() {
+            const interval = setInterval(() => {
+                createFirework();
+            }, 400);
+            
+            // Detener después de 15 cohetes
+            setTimeout(() => {
+                clearInterval(interval);
+            }, 8000);
+        }
+        
+        function createFirework() {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            
+            // Posición aleatoria
+            const left = Math.random() * 80 + 10;
+            const top = Math.random() * 40 + 30;
+            
+            // Color aleatorio
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            firework.style.left = `${left}%`;
+            firework.style.top = `${top}%`;
+            firework.style.color = color;
+            firework.style.boxShadow = `0 0 20px 10px ${color}`;
+            
+            document.body.appendChild(firework);
+            
+            // Animación de explosión
+            setTimeout(() => {
+                firework.style.animation = 'explode 1.5s forwards';
+                
+                // Crear partículas
+                createParticles(left, top, color);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    firework.remove();
+                }, 1500);
+            }, 1500);
+        }
+        
+        function createParticles(x, y, color) {
+            const particleCount = 60;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework';
+                particle.style.left = `${x}%`;
+                particle.style.top = `${y}%`;
+                particle.style.color = color;
+                particle.style.boxShadow = `0 0 10px 5px ${color}`;
+                particle.style.width = '8px';
+                particle.style.height = '8px';
+                particle.style.opacity = '0';
+                
+                // Dirección aleatoria
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 5 + Math.random() * 20;
+                const duration = 1 + Math.random();
+                
+                particle.style.transition = `all ${duration}s ease-out`;
+                
+                document.body.appendChild(particle);
+                
+                // Mover partícula
+                setTimeout(() => {
+                    particle.style.left = `${x + Math.cos(angle) * distance}%`;
+                    particle.style.top = `${y + Math.sin(angle) * distance}%`;
+                    particle.style.opacity = '1';
+                    
+                    // Desvanecer
+                    setTimeout(() => {
+                        particle.style.opacity = '0';
+                    }, duration * 500);
+                    
+                    // Eliminar después de la animación
+                    setTimeout(() => {
+                        particle.remove();
+                    }, duration * 1000);
+                }, 10);
+            }
+        }
+        
+        // Iniciar todo al cargar la página
+        window.onload = function() {
+            createStars();
+            createRoses();
+        };
+    </script>
+</body>
+</html>
